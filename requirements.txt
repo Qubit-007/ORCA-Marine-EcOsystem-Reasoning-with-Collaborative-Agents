@@ -6,7 +6,7 @@ gunicorn>=23.0
 # AI Mission pipeline (mission_agent.py) - Planner/Weather/Geospatial/Judge agents.
 # Requires a GROQ_API_KEY environment variable (https://console.groq.com/keys).
 crewai>=0.86
-geopy>=2.4
+geopy>=2.5.0
 
 # Copernicus Marine (Geospatial/Fishery agent) - requires credentials from
 # https://data.marine.copernicus.eu, set via `copernicusmarine login` or
