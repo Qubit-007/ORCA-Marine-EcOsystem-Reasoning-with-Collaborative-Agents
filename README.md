@@ -2,6 +2,8 @@
 
 A Flask-based web application for marine intelligence and decision support.
 
+**Live UI:** [Open ORCA on GitHub Pages](https://izzo-dev-cooked.github.io/ORCA-Marine-EcOsystem-Reasoning-with-Collaborative-Agents/)
+
 ## Project Structure
 
 ```
@@ -43,6 +45,19 @@ python ui.py
 ```
 
 The application will start at `http://localhost:5000`
+
+### Production Deployment
+
+The repository includes `render.yaml` for a Render web service and a `Dockerfile` for container deployment. Both use Gunicorn through `wsgi.py` and expose `/healthz` for health checks.
+
+For Render, create a new Blueprint from this repository, then add `GROQ_API_KEY` in the service environment. Copernicus Marine and Fast2SMS variables are optional. For Docker:
+
+```bash
+docker build -t orca-marine-ecosystem .
+docker run --env-file .env -p 8080:8080 orca-marine-ecosystem
+```
+
+See `.env.example` and `RELEASE_NOTES.md` for configuration and the current release details.
 
 ## Features
 

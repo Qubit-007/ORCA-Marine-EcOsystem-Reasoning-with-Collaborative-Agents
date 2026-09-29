@@ -16,6 +16,14 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("orca.tiles")
 
+
+def _read_release_version():
+    try:
+        with open(os.path.join(os.path.dirname(__file__), 'VERSION'), encoding='utf-8') as version_file:
+            return version_file.read().strip() or 'development'
+    except OSError:
+        return 'development'
+
 # The CrewAI mission pipeline (Planner -> Weather/Geospatial -> Judge) is a heavy,
 # optional dependency (crewai, copernicusmarine, xarray...). Import it defensively
 # so the rest of the app still works even if those packages aren't installed.
@@ -441,6 +449,23 @@ LOCATION_DATABASE = {
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/deployment')
+def deployment():
+    return render_template(
+        'deployment.html',
+        version=_read_release_version(),
+        mission_agent_available=MISSION_AGENT_AVAILABLE,
+        copernicus_configured=bool(
+            os.environ.get('COPERNICUSMARINE_SERVICE_USERNAME')
+            and os.environ.get('COPERNICUSMARINE_SERVICE_PASSWORD')
+        ),
+        groq_configured=bool(os.environ.get('GROQ_API_KEY')),
+    )
+
+@app.route('/healthz')
+def health_check():
+    return jsonify({"status": "ok", "mission_agent_available": MISSION_AGENT_AVAILABLE})
 
 @app.route('/api/search-location', methods=['POST'])
 def search_location():
@@ -887,5 +912,7 @@ if __name__ == '__main__':
     # threaded=True: the mission SSE stream holds a request open (blocking on
     # its queue) while a background thread runs CrewAI, so other requests
     # (tiles, chat, another mission) must be able to proceed concurrently.
-    app.run(debug=debug_mode, host='localhost', port=5000, threaded=True)
+    host = os.environ.get('FLASK_HOST', 'localhost')
+    port = int(os.environ.get('PORT', '5000'))
+    app.run(debug=debug_mode, host=host, port=port, threaded=True)
     

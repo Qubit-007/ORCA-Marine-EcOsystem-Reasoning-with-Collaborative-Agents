@@ -1,6 +1,7 @@
 # Core web app (ui.py)
 flask>=3.0
 requests>=2.31
+gunicorn>=23.0
 
 # AI Mission pipeline (mission_agent.py) - Planner/Weather/Geospatial/Judge agents.
 # Requires a GROQ_API_KEY environment variable (https://console.groq.com/keys).
